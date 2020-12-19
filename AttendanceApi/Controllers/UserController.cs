@@ -1,6 +1,7 @@
 ﻿using AttendanceApi.Context;
 using AttendanceApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,15 +30,24 @@ namespace AttendanceApi.Controllers
             var user = _db.Logins.SingleOrDefault(x => x.Username == username && x.Password==password);
 
             // check if username exists
+            
             if (user == null)
             {
                 return Ok("False");
             }
                 
-            else
+            else 
             {
-                return Ok("User_Id : " + user.Id);
+                var result = new
+                {
+                    UserId = user.Id,
+                    LogIn="Success"
+                };
+
+                return Ok(result);
+
             }
+            
         }
 
         // GET api/<UserController>/5
