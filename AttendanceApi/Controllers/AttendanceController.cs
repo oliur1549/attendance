@@ -33,7 +33,18 @@ namespace AttendanceApi.Controllers
         [HttpGet("{id}/{date}")]
         public IActionResult Get(int id, DateTime date)
         {
-            var result = _db.Attendances.Where(p=>p.UserId==id && p.DateTime.Date==date.Date).ToList();
+            var result = from table in _db.Attendances
+                         .Where(b=>b.UserId==id && b.DateTime.Date==date.Date)
+                         group table by table.UserId into g
+                        
+                         select (new
+                         {
+                             InTime = g.Min(p => p.InTime),
+                             OutTime = g.Max(p => p.OutTime)
+
+                         });
+                
+               
             return Ok(result);
         }
 
@@ -42,30 +53,51 @@ namespace AttendanceApi.Controllers
         public IActionResult Post([FromBody] Attendance models, int id)
         {
             var userid = _db.Logins.Find(id);
-            if (userid.Id==id)
+            if (userid.Id == id)
             {
                 byte[] array = Encoding.ASCII.GetBytes(models.PicBack);
                 byte[] newarray = Encoding.ASCII.GetBytes(models.PicFront);
 
-                string BackimgResized = Convert.ToBase64String(array);
-                string frontimgResized = Convert.ToBase64String(newarray);
-                models.PicBack = BackimgResized;
-                models.PicFront = frontimgResized;
-                models.UserId = id;
-                var result = _db.Attendances.Add(models);
-                _db.SaveChangesAsync();
-                return Ok(result);
+                DateTime dateTime = DateTime.Now;
+                DateTime time = Convert.ToDateTime("9:05 AM");
+                if (dateTime <= time)
+                {
+                    string BackimgResized = Convert.ToBase64String(array);
+                    string frontimgResized = Convert.ToBase64String(newarray);
+                    models.PicBack = BackimgResized;
+                    models.PicFront = frontimgResized;
+                    models.UserId = id;
+                    models.InTime = DateTime.Now;
+                    models.OutTime = null;
+                    var result = _db.Attendances.Add(models);
+                    _db.SaveChangesAsync();
+                    return Ok(result);
+                }
+                else
+                {
+                    string BackimgResized = Convert.ToBase64String(array);
+                    string frontimgResized = Convert.ToBase64String(newarray);
+                    models.PicBack = BackimgResized;
+                    models.PicFront = frontimgResized;
+                    models.UserId = id;
+                    models.InTime = null;
+                    models.OutTime = DateTime.Now;
+                    var result = _db.Attendances.Add(models);
+                    _db.SaveChangesAsync();
+                    return Ok(result);
+                }
+
             }
             else
             {
                 return Ok();
             }
-            
+
         }
 
         // PUT api/<AttendanceController>/5
         [HttpPut("{id}")]
-        public IActionResult Put( int id, Attendance model)
+        public IActionResult Put(int id, Attendance model)
         {
             var result = _db.Attendances.Find(id);
             if (ModelState.IsValid)
@@ -77,7 +109,7 @@ namespace AttendanceApi.Controllers
                 _db.SaveChanges();
                 return Ok(update);
             }
-            
+
             return Ok();
         }
 

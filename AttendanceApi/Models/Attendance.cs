@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace AttendanceApi.Models
         public DateTime? InTime { get; set; }
         public DateTime? OutTime { get; set; }
         public int UserId { get; set; }
-        public virtual Login Login { get; set; }
+        public Login Logins { get; set; }
 
     }
 }

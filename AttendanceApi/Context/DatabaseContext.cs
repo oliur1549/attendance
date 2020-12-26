@@ -17,10 +17,11 @@ namespace AttendanceApi.Context
         {
 
 
-            builder.Entity<Attendance>()
-                .HasOne(p => p.Login)
-                .WithMany(i => i.Attendances)
-                .HasForeignKey(p => p.UserId);
+            builder.Entity<Login>()
+                .HasOne(p => p.Attendances)
+                .WithOne(i => i.Logins)
+                .HasForeignKey<Attendance>(b => b.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);
         }

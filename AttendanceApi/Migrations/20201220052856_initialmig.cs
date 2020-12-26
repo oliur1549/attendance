@@ -44,14 +44,14 @@ namespace AttendanceApi.Migrations
                         name: "FK_Attendances_Logins_UserId",
                         column: x => x.UserId,
                         principalTable: "Logins",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attendances_UserId",
                 table: "Attendances",
-                column: "UserId");
+                column: "UserId",
+                unique: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

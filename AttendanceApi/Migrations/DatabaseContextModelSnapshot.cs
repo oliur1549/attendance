@@ -55,7 +55,8 @@ namespace AttendanceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Attendances");
                 });
@@ -80,10 +81,10 @@ namespace AttendanceApi.Migrations
 
             modelBuilder.Entity("AttendanceApi.Models.Attendance", b =>
                 {
-                    b.HasOne("AttendanceApi.Models.Login", "Login")
-                        .WithMany("Attendances")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("AttendanceApi.Models.Login", "Logins")
+                        .WithOne("Attendances")
+                        .HasForeignKey("AttendanceApi.Models.Attendance", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
